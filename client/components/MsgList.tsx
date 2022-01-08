@@ -13,7 +13,7 @@ const msgsSize = 50;
 const originalMessages: Message[] = Array(msgsSize)
   .fill(0)
   .map((_, i) => ({
-    id: msgsSize - i,
+    id: `${msgsSize - i}`,
     userId: getRandomUserId(),
     timestamp: 123456890123 + (msgsSize - i) * 1000 * 60,
     text: `${msgsSize - i} mock text`,
@@ -21,11 +21,11 @@ const originalMessages: Message[] = Array(msgsSize)
 
 const MsgList = () => {
   const [msgs, setMsgs] = useState<Message[]>(originalMessages);
-  const [editingId, setEditingId] = useState<number>(null);
+  const [editingId, setEditingId] = useState<string>(null);
 
   const onCreate = (text: string) => {
     const newMsg: Message = {
-      id: msgs.length + 1,
+      id: `${msgs.length + 1}`,
       userId: getRandomUserId(),
       timestamp: Date.now(),
       text: `${msgs.length + 1} ${text}`,
@@ -34,7 +34,7 @@ const MsgList = () => {
     msgs.unshift(newMsg);
   };
 
-  const onUpdate = (text: string, id: number) => {
+  const onUpdate = (text: string, id: string) => {
     setMsgs((msgs) => {
       const targetIndex = msgs.findIndex((msg) => msg.id === id);
       if (targetIndex < 0) return msgs;
@@ -45,7 +45,7 @@ const MsgList = () => {
     doneEdit();
   };
 
-  const onDelete = (id: number) => {
+  const onDelete = (id: string) => {
     setMsgs((msgs) => {
       const targetIndex = msgs.findIndex((msg) => msg.id === id);
       if (targetIndex < 0) return msgs;

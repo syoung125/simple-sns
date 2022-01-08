@@ -2,7 +2,7 @@ import { Message } from "../types/message";
 import MsgInput from "./MsgInput";
 
 type MsgItemProps = Message & {
-  onUpdate: (text: string, id: number) => void;
+  onUpdate: (text: string, id: string) => void;
   onDelete: () => void;
   isEditing: boolean;
   startEdit: () => void;

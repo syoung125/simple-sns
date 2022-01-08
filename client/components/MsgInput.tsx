@@ -1,9 +1,9 @@
 const { useRef } = require("react");
 
 type MsgInputProps = {
-  mutate: (text: string, id?: number) => void;
+  mutate: (text: string, id?: string) => void;
   text?: string;
-  id?: number;
+  id?: string;
 };
 
 const MsgInput = ({ mutate, text = "", id }: MsgInputProps) => {

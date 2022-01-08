@@ -1,5 +1,5 @@
 export type Message = {
-  id: number;
+  id: string;
   userId: string;
   timestamp: number;
   text: string;
