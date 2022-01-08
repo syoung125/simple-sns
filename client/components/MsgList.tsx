@@ -1,53 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
+import fetcher from "../fetcher";
 import { Message } from "../types/message";
 
 import MsgInput from "./MsgInput";
 import MsgItem from "./MsgItem";
 
-const UserIds = ["roy", "jay"];
-const getRandomUserId = () => UserIds[Math.round(Math.random())];
-
-const msgsSize = 50;
-
-const originalMessages: Message[] = Array(msgsSize)
-  .fill(0)
-  .map((_, i) => ({
-    id: `${msgsSize - i}`,
-    userId: getRandomUserId(),
-    timestamp: 123456890123 + (msgsSize - i) * 1000 * 60,
-    text: `${msgsSize - i} mock text`,
-  }));
-
 const MsgList = () => {
-  const [msgs, setMsgs] = useState<Message[]>(originalMessages);
+  const { query } = useRouter();
+  const userId = query.userId || query.userid || "";
+  const [msgs, setMsgs] = useState<Message[]>([]);
   const [editingId, setEditingId] = useState<string>(null);
 
-  const onCreate = (text: string) => {
-    const newMsg: Message = {
-      id: `${msgs.length + 1}`,
-      userId: getRandomUserId(),
-      timestamp: Date.now(),
-      text: `${msgs.length + 1} ${text}`,
-    };
+  const onCreate = async (text: string) => {
+    const newMsg = await fetcher("post", "/messages", { text, userId });
+    if (!newMsg) throw Error("something wrong");
     setMsgs((msgs) => [newMsg, ...msgs]);
-    msgs.unshift(newMsg);
   };
 
-  const onUpdate = (text: string, id: string) => {
+  const onUpdate = async (text: string, id: string) => {
+    const newMsg = await fetcher("put", `/messages/${id}`, { text, userId });
+    if (!newMsg) return;
     setMsgs((msgs) => {
       const targetIndex = msgs.findIndex((msg) => msg.id === id);
-      if (targetIndex < 0) return msgs;
+      if (!newMsg) throw Error("something wrong");
       const newMsgs = [...msgs];
-      newMsgs.splice(targetIndex, 1, { ...msgs[targetIndex], text });
+      newMsgs.splice(targetIndex, 1, newMsg);
       return newMsgs;
     });
     doneEdit();
   };
 
-  const onDelete = (id: string) => {
+  const onDelete = async (id: string) => {
+    const receviedId = await fetcher("delete", `/messages/${id}`, {
+      params: { userId },
+    });
+    if (!receviedId) return;
     setMsgs((msgs) => {
-      const targetIndex = msgs.findIndex((msg) => msg.id === id);
+      const targetIndex = msgs.findIndex(
+        (msg) => msg.id === receviedId.toString()
+      );
       if (targetIndex < 0) return msgs;
       const newMsgs = [...msgs];
       newMsgs.splice(targetIndex, 1);
@@ -57,9 +50,18 @@ const MsgList = () => {
 
   const doneEdit = () => setEditingId(null);
 
+  const getMsgs = async () => {
+    const msgs = await fetcher("get", "/messages");
+    setMsgs(msgs);
+  };
+
+  useEffect(() => {
+    getMsgs();
+  }, []);
+
   return (
     <>
-      <MsgInput mutate={onCreate} />
+      {userId && <MsgInput mutate={onCreate} />}
       <ul className="messages">
         {msgs.map((x) => (
           <MsgItem
@@ -69,6 +71,7 @@ const MsgList = () => {
             onDelete={() => onDelete(x.id)}
             startEdit={() => setEditingId(x.id)}
             isEditing={editingId === x.id}
+            myId={userId.toString()}
           />
         ))}
       </ul>
