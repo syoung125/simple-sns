@@ -6,16 +6,19 @@ import MsgItem from "./MsgItem";
 
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import fetcher from "../fetcher";
-import { Message } from "../types/message";
+import IMessage from "../interfaces/message";
+import IUser from "../interfaces/user";
 
 type MsgListProps = {
-  smsgs: Message[];
+  smsgs: IMessage[];
+  users: Record<string, IUser>;
 };
 
-const MsgList = ({ smsgs }: MsgListProps) => {
+const MsgList = ({ smsgs, users }: MsgListProps) => {
   const { query } = useRouter();
-  const userId = query.userId || query.userid || "";
-  const [msgs, setMsgs] = useState<Message[]>(smsgs);
+  const userId: string =
+    query.userId.toString() || query.userid.toString() || "";
+  const [msgs, setMsgs] = useState<IMessage[]>(smsgs);
   const [editingId, setEditingId] = useState<string>(null);
   const [hasNext, setHasNext] = useState(true);
   const fetchMoreEl = useRef(null);
@@ -82,7 +85,8 @@ const MsgList = ({ smsgs }: MsgListProps) => {
             onDelete={() => onDelete(x.id)}
             startEdit={() => setEditingId(x.id)}
             isEditing={editingId === x.id}
-            myId={userId.toString()}
+            myId={userId}
+            user={users[x.userId]}
           />
         ))}
       </ul>

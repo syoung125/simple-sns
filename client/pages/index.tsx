@@ -3,23 +3,26 @@ import { GetServerSideProps } from "next";
 import MsgList from "../components/MsgList";
 
 import fetcher from "../fetcher";
-import { Message } from "../types/message";
+import IMessage from "../interfaces/message";
+import IUser from "../interfaces/user";
 
 type HomeProps = {
-  smsgs: Message[];
+  smsgs: IMessage[];
+  users: Record<string, IUser>;
 };
 
-const Home = ({ smsgs }: HomeProps) => (
+const Home = ({ smsgs, users }: HomeProps) => (
   <>
     <h1>SIMPLE SNS</h1>
-    <MsgList smsgs={smsgs} />
+    <MsgList smsgs={smsgs} users={users} />
   </>
 );
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const smsgs = await fetcher("get", "/messages");
+  const users = await fetcher("get", "/users");
   return {
-    props: { smsgs },
+    props: { smsgs, users },
   };
 };
 

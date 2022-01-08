@@ -1,12 +1,15 @@
-import { Message } from "../types/message";
 import MsgInput from "./MsgInput";
 
-type MsgItemProps = Message & {
+import IMessage from "../interfaces/message";
+import IUser from "../interfaces/user";
+
+type MsgItemProps = IMessage & {
   onUpdate: (text: string, id: string) => void;
   onDelete: () => void;
   isEditing: boolean;
   startEdit: () => void;
   myId: string;
+  user: IUser;
 };
 
 const MsgItem = ({
@@ -19,10 +22,11 @@ const MsgItem = ({
   isEditing,
   startEdit,
   myId,
+  user,
 }: MsgItemProps) => (
   <li className="messages__item">
     <h3>
-      {userId}{" "}
+      {user.nickname}{" "}
       <sub>
         {new Date(timestamp).toLocaleString("ko-KR", {
           year: "numeric",
