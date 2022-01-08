@@ -5,14 +5,17 @@ const getMsgs = () => readDB("messages");
 
 const setMsgs = (data) => writeDB("messages", data);
 
+const PAGE_SIZE = 15;
+
 const messagesRoute = [
   {
     // GET MESSAGES
     method: "get",
     route: "/messages",
-    handler: (req, res) => {
+    handler: ({ query: { cursor = "" } }, res) => {
       const msgs = getMsgs();
-      res.send(msgs);
+      const fromIndex = msgs.findIndex((msg) => msg.id === cursor) + 1;
+      res.send(msgs.splice(fromIndex, fromIndex + PAGE_SIZE));
     },
   },
   {
