@@ -8,10 +8,14 @@ import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import fetcher from "../fetcher";
 import { Message } from "../types/message";
 
-const MsgList = () => {
+type MsgListProps = {
+  smsgs: Message[];
+};
+
+const MsgList = ({ smsgs }: MsgListProps) => {
   const { query } = useRouter();
   const userId = query.userId || query.userid || "";
-  const [msgs, setMsgs] = useState<Message[]>([]);
+  const [msgs, setMsgs] = useState<Message[]>(smsgs);
   const [editingId, setEditingId] = useState<string>(null);
   const [hasNext, setHasNext] = useState(true);
   const fetchMoreEl = useRef(null);
