@@ -2,13 +2,16 @@ import { GetServerSideProps } from "next";
 
 import MsgList from "../components/MsgList";
 
-import fetcher from "../fetcher";
 import IMessage from "../interfaces/message";
 import IUser from "../interfaces/user";
 
+import { fetcher } from "../queryClient";
+import { GET_MESSAGES } from "../graphql/message";
+import { GET_USERS } from "../graphql/user";
+
 type HomeProps = {
   smsgs: IMessage[];
-  users: Record<string, IUser>;
+  users: IUser[];
 };
 
 const Home = ({ smsgs, users }: HomeProps) => (
@@ -19,8 +22,8 @@ const Home = ({ smsgs, users }: HomeProps) => (
 );
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const smsgs = await fetcher("get", "/messages");
-  const users = await fetcher("get", "/users");
+  const { messages: smsgs } = await fetcher(GET_MESSAGES);
+  const { users } = await fetcher(GET_USERS);
   return {
     props: { smsgs, users },
   };

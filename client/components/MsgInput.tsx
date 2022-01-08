@@ -1,7 +1,7 @@
 const { useRef } = require("react");
 
 type MsgInputProps = {
-  mutate: (text: string, id?: string) => void;
+  mutate: (input: { text: string; id?: string }) => void;
   text?: string;
   id?: string;
 };
@@ -14,7 +14,7 @@ const MsgInput = ({ mutate, text = "", id }: MsgInputProps) => {
     e.stopPropagation();
     const text = textRef.current.value;
     textRef.current.value = "";
-    mutate(text, id);
+    mutate({ text, id });
   };
 
   return (

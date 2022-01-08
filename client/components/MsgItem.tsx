@@ -4,7 +4,7 @@ import IMessage from "../interfaces/message";
 import IUser from "../interfaces/user";
 
 type MsgItemProps = IMessage & {
-  onUpdate: (text: string, id: string) => void;
+  onUpdate: (input: { text: string; id: string }) => void;
   onDelete: () => void;
   isEditing: boolean;
   startEdit: () => void;
